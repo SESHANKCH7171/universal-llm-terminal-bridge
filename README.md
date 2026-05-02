@@ -108,7 +108,7 @@ Create a `.env` file in the project root (⚠️ **this file is in `.gitignore` 
 GEMINI_API_KEY=your_google_api_key_here
 
 # Model Tier Mapping (customize as needed)
-OPUS_MODEL=gemini/gemini-2.5-pro
+OPUS_MODEL=gemini/gemini-3.1-pro-preview
 SONNET_MODEL=gemini/gemini-2.5-pro
 HAIKU_MODEL=gemini/gemini-2.5-flash
 
@@ -186,7 +186,7 @@ This is an **educational project** demonstrating API schema translation, local p
 |---|---|
 | Proxy Server | FastAPI (Python) |
 | LLM Translation | LiteLLM |
-| Destination Model | Google Gemini 2.5 Pro / Flash |
+| Destination Model | Google Gemini 3.1 Pro & 2.5 Pro / Flash |
 | Async Streaming | Python `asyncio`, SSE |
 | Schema Sanitization | Recursive JSON transformer (custom) |
 | Enterprise Mode | GCP Vertex AI |
