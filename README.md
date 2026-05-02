@@ -89,7 +89,7 @@ Vertex AI provides:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/SESHANKCH7171/universal-llm-terminal-bridge.git
+git clone https://github.com/SESHANKCH7171/UNIVERSAL-LLM-TERMINAL-BRIDGE.git
 cd universal-llm-terminal-bridge
 ```
 
