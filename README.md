@@ -38,7 +38,7 @@ Instead of hardcoding a single destination model, the proxy reads the incoming r
 
 | Incoming Request | Routed To |
 |---|---|
-| Claude Opus | `gemini/gemini-2.5-pro` (heavy reasoning) |
+| Claude Opus | `gemini/gemini-3.1-pro-preview` (heavy reasoning) |
 | Claude Sonnet | `gemini/gemini-2.5-pro` (balanced) |
 | Claude Haiku | `gemini/gemini-2.5-flash` (fast tasks) |
 
