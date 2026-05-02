@@ -200,6 +200,8 @@ This is an **educational project** demonstrating API schema translation, local p
 
 ***
 
+"This is an independent open-source project. Not affiliated with Anthropic or Google."
+
 ## ⭐ If this helped you
 
 Star the repo and share it with a developer who's tired of single-provider lock-in.
