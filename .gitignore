@@ -36,3 +36,40 @@ ENV/
 .vscode/
 *.swp
 *.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# FastAPI / Uvicorn
+*.pid
+
+# LiteLLM cache
+.litellm_cache/
+litellm_proxy_config.yaml
+
+# Test outputs
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Jupyter (if you ever experiment)
+.ipynb_checkpoints/
+*.ipynb
+
+# API keys / secrets (extra safety net)
+*.key
+*.pem
+secrets.json
+config.local.json
+
+# Node (in case you add a frontend later)
+node_modules/
+
+.env.claude
+.env.openai
+.env.anthropic
+
+.litellm_cache/
+.gemini_cache/
