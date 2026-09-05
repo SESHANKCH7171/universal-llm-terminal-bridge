@@ -63,10 +63,14 @@ coverage.xml
 *.pem
 secrets.json
 config.local.json
+google-creds.json
+*vertex*.json
+*-*.json
 
 # Node (in case you add a frontend later)
 node_modules/
 
+.claude/
 .env.claude
 .env.openai
 .env.anthropic

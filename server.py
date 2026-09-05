@@ -14,6 +14,12 @@ from dotenv import load_dotenv
 import re
 from datetime import datetime
 import sys
+if hasattr(sys.stdout, 'reconfigure'):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stderr.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
 
 # Load environment variables from .env file
 load_dotenv()
@@ -100,7 +106,7 @@ PREFERRED_PROVIDER = os.environ.get("PREFERRED_PROVIDER", "openai").lower()
 # Get model mapping configuration from environment
 OPUS_MODEL = os.environ.get("OPUS_MODEL", "gemini/gemini-3.1-pro-preview")
 SONNET_MODEL = os.environ.get("SONNET_MODEL", "gemini/gemini-2.5-pro")
-HAIKU_MODEL = os.environ.get("HAIKU_MODEL", "gemini/gemini-2.5-flash")
+HAIKU_MODEL = os.environ.get("HAIKU_MODEL", "gemini/gemini-3.5-flash")
 
 # List of OpenAI models
 OPENAI_MODELS = [
@@ -121,6 +127,8 @@ OPENAI_MODELS = [
 # List of Gemini models
 GEMINI_MODELS = [
     "gemini-2.5-flash",
+    "gemini-3.5-flash",
+    "gemini-3.7-flash",
     "gemini-2.5-pro",
     "gemini-3.1-pro-preview"
 ]
@@ -173,7 +181,7 @@ class SystemContent(BaseModel):
     text: str
 
 class Message(BaseModel):
-    role: Literal["user", "assistant"] 
+    role: Literal["user", "assistant", "system"] 
     content: Union[str, List[Union[ContentBlockText, ContentBlockImage, ContentBlockToolUse, ContentBlockToolResult]]]
 
 class Tool(BaseModel):
@@ -268,7 +276,7 @@ class TokenCountRequest(BaseModel):
     
     @field_validator('model')
     def validate_model_token_count(cls, v, info): # Renamed to avoid conflict
-        # Use the same logic as MessagesRequest validator
+        # Use the same logic as Mesh6sagesRequest validator
         # NOTE: Pydantic validators might not share state easily if not class methods
         # Re-implementing the logic here for clarity, could be refactored
         original_model = v
@@ -1073,6 +1081,12 @@ async def handle_streaming(response_generator, original_request: MessagesRequest
         error_message = f"Error in streaming: {str(e)}\n\nFull traceback:\n{error_traceback}"
         logger.error(error_message)
         
+        # Yield the error as text so Claude Code actually displays the error instead of a blank response
+        err_text = f"\n[Proxy Error: {str(e)}]"
+        err_data = json.dumps({"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": err_text}})
+        yield f"event: content_block_delta\ndata: {err_data}\n\n"
+        yield f"event: content_block_stop\ndata: {json.dumps({'type': 'content_block_stop', 'index': 0})}\n\n"
+        
         # Send error message_delta
         yield f"event: message_delta\ndata: {json.dumps({'type': 'message_delta', 'delta': {'stop_reason': 'error', 'stop_sequence': None}, 'usage': {'output_tokens': 0}})}\n\n"
         
@@ -1489,17 +1503,20 @@ def log_request_beautifully(method, path, claude_model, openai_model, num_messag
     messages_str = f"{Colors.BLUE}{num_messages} messages{Colors.RESET}"
     
     # Format status code
-    status_str = f"{Colors.GREEN}✓ {status_code} OK{Colors.RESET}" if status_code == 200 else f"{Colors.RED}✗ {status_code}{Colors.RESET}"
+    status_str = f"{Colors.GREEN}[OK] {status_code}{Colors.RESET}" if status_code == 200 else f"{Colors.RED}[ERR] {status_code}{Colors.RESET}"
     
 
     # Put it all together in a clear, beautiful format
     log_line = f"{Colors.BOLD}{method} {endpoint}{Colors.RESET} {status_str}"
-    model_line = f"{claude_display} → {openai_display} {tools_str} {messages_str}"
+    model_line = f"{claude_display} -> {openai_display} {tools_str} {messages_str}"
     
-    # Print to console
-    print(log_line)
-    print(model_line)
-    sys.stdout.flush()
+    # Print to console safely
+    try:
+        print(log_line)
+        print(model_line)
+        sys.stdout.flush()
+    except Exception:
+        pass
 
 if __name__ == "__main__":
     import sys
